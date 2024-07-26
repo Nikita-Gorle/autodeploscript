@@ -1,0 +1,27 @@
+name: Deploy Specific Odoo Instance
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to match the branch you want to trigger the workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy code to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@15.207.5.255 << 'EOF'
+            cd /path/to/your/odoo-instance-directory  # Update with the path to your Odoo instance
+            git pull origin main
+            sudo systemctl restart odoo-instance-service  # Update with the actual service name for this Odoo instance
+          EOF
